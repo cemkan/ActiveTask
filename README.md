@@ -1,6 +1,6 @@
 # ActiveTask
 
-https://ci.appveyor.com/project/cemkan/activetask/builds/38118221
+[![Build status](https://ci.appveyor.com/api/projects/status/4o38plt0xbo1ubc8/branch/master?svg=true)](https://ci.appveyor.com/project/cemkan/activetask/branch/master)
 
 Active Task is a header only library which provides exclusive thread to any class who inherit from it.
 
