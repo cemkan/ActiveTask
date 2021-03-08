@@ -64,7 +64,7 @@ TEST(Logic, MainTaskDoesntWaitOnSeperateTask)
 	EXPECT_TRUE(elapsed.count() < 1000);
 }
 
-/*TEST(Logic, CreateDataRace)
+TEST(Logic, CreateDataRace)
 {
 	uint32_t sharedResource = 0;
 	constexpr uint32_t activeObjectCount = 200;
@@ -94,7 +94,7 @@ TEST(Logic, MainTaskDoesntWaitOnSeperateTask)
 	}
 	
 	EXPECT_NE(sharedResource, (activeObjectCount * iterateCount));
-}*/
+}
 
 TEST(Logic, SolvedDataRace)
 {
