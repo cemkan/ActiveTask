@@ -42,14 +42,13 @@ protected:
 		}
 	}
 
-
 	inline void ExecuteOnMyTask(std::function<void()> const  _func)
 	{
 		{
 			std::lock_guard<std::mutex> lk(mtx);
 			queWork.push(_func);
 		}
-		cv.notify_one();
+		cv.notify_one();			//notifying doesnt require thread-safety
 	}
 
 	inline size_t GetMyWorkCount()
@@ -66,7 +65,5 @@ protected:
 	{
 		return thr.get_id();
 	}
-
-	
 
 };

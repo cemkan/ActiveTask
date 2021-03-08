@@ -28,7 +28,7 @@ public:
 void ReSchedule()
 {
 	using namespace std::chrono_literals;
-	std::this_thread::sleep_for(1ms);		//for re-schedule
+	std::this_thread::sleep_for(1ms);
 }
 
 TEST(Logic, OwnSeperateTask)
