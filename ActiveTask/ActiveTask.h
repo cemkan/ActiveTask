@@ -25,14 +25,15 @@ protected:
 					ul.unlock();
 					break;
 				}
-				queWork.front()();
+				auto func = queWork.front();
+				std::invoke(func);
 				queWork.pop();
 				ul.unlock();
 			}
 		});
 	}
 
-	inline ~ActiveTask()
+	inline virtual  ~ActiveTask()
 	{
 		alive = false;
 		cv.notify_one();
@@ -42,8 +43,10 @@ protected:
 		}
 	}
 
-	inline void ExecuteOnMyTask(std::function<void()> const  _func)
+	template<typename Function, typename... Arguments>
+	inline void ExecuteOnMyTask(Function func, Arguments... parameters)
 	{
+		std::function<void()> _func{ std::bind(func, parameters...) };
 		{
 			std::lock_guard<std::mutex> lk(mtx);
 			queWork.push(_func);

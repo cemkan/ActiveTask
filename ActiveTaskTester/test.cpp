@@ -13,6 +13,12 @@ public:
 		ExecuteOnMyTask(_func);
 	}
 
+	template<typename Function, typename... Arguments>
+	void Execute(Function func, Arguments... parameters)
+	{
+		ExecuteOnMyTask(func, std::forward<Arguments>(parameters)...);
+	}
+
 	auto GetID()
 	{
 		return GetMyTaskID();
@@ -160,6 +166,16 @@ TEST(Functionality, ExecuteLambda)
 	test.Execute([]() {
 		FuncWithArg(5);
 	});
+
+	ReSchedule();
+
+	EXPECT_TRUE(initiallyZero == 5);
+}
+
+TEST(Functionality, ExecuteFuncWithArgs)
+{
+	CActiveTest test;
+	test.Execute(FuncWithArg, 5);
 
 	ReSchedule();
 
