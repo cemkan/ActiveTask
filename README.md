@@ -9,7 +9,7 @@ ActiveTask is a helper tool that abstracts thread implementation.
 
 #Usage:
 1. Inherit from ActiveTask
-2. Call ExecuteOnMyThread(std::function<void()>)
+2. Call ExecuteOnMyThread!
 
 Samples can be found on ActiveTaskTester.
 
