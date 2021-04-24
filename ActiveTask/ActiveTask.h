@@ -5,15 +5,25 @@
 
 class ActiveTask
 {
-private:
-	bool alive = true;
-	std::mutex mtx;
-	std::condition_variable cv;
-	std::queue<std::function<void()>> queWork;
-	std::thread thr;
+	
+public:
+	//copy or move ops are forbidden
+	ActiveTask(const ActiveTask&) = delete;
+	ActiveTask(ActiveTask&&) = delete;
+	ActiveTask& operator=(const ActiveTask&) = delete;
+	ActiveTask& operator=(ActiveTask&&) = delete;
+	virtual ~ActiveTask()
+	{
+		alive = false;
+		cv.notify_one();
+		if (thr.joinable())
+		{
+			thr.join();
+		}
+	}
 
 protected:
-	inline ActiveTask()
+	ActiveTask()
 	{
 		thr = std::thread([&]() {
 			while (alive)
@@ -30,31 +40,24 @@ protected:
 				queWork.pop();
 				ul.unlock();
 			}
-		});
+			});
 	}
 
-	inline virtual ~ActiveTask()
-	{
-		alive = false;
-		cv.notify_one();
-		if (thr.joinable())
-		{
-			thr.join();
-		}
-	}
+
 
 	template<typename Function, typename... Arguments>
-	inline void ExecuteOnMyTask(Function func, Arguments... parameters)
+	void ExecuteOnMyTask(Function funcToBind, Arguments... paramsToBind)
 	{
-		std::function<void()> _func{ std::bind(func, parameters...) };
 		{
+			const std::function<void()> funcToCall{ std::bind(funcToBind, paramsToBind...) };
+
 			std::lock_guard<std::mutex> lk(mtx);
-			queWork.push(_func);
+			queWork.push(funcToCall);
 		}
-		cv.notify_one();			//notifying doesnt require thread-safety
+		cv.notify_one();			//notifying doesn't require thread-safety
 	}
 
-	inline size_t GetMyWorkCount()
+	size_t GetMyWorkCount()
 	{
 		size_t workCount = 0;
 		{
@@ -64,9 +67,16 @@ protected:
 		return workCount;
 	}
 
-	inline std::thread::id GetMyTaskID()
+	std::thread::id GetMyTaskID() const noexcept
 	{
 		return thr.get_id();
 	}
 
+private:
+	bool alive = true;
+	std::mutex mtx;
+	std::condition_variable cv;
+	std::queue<std::function<void()>> queWork;
+	std::thread thr;
 };
+
