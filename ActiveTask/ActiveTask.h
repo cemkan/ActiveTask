@@ -25,7 +25,7 @@ protected:
 					ul.unlock();
 					break;
 				}
-				auto func = queWork.front();
+				std::function<void()> func = queWork.front();
 				std::invoke(func);
 				queWork.pop();
 				ul.unlock();
@@ -33,7 +33,7 @@ protected:
 		});
 	}
 
-	inline virtual  ~ActiveTask()
+	inline virtual ~ActiveTask()
 	{
 		alive = false;
 		cv.notify_one();
